@@ -1,6 +1,6 @@
-# news_provider
+# Nws Application
 
-A new Flutter project.
+News application developed with Flutter
 
 ## Getting Started
 
