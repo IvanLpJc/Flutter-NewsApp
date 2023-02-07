@@ -11,13 +11,19 @@ class TabsPage extends StatelessWidget {
     return SafeArea(
       child: ChangeNotifierProvider(
         create: (_) => _NavigationModel(),
-        child: const Scaffold(
-          body: Padding(
-            padding: EdgeInsets.all(8.0),
-            child: _Pages(),
-          ),
-          bottomNavigationBar: _Navigation(),
-        ),
+        builder: (context, child) {
+          final navigationModel = Provider.of<_NavigationModel>(context);
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(navigationModel.getCurrentPageTitle()),
+            ),
+            body: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: _Pages(),
+            ),
+            bottomNavigationBar: const _Navigation(),
+          );
+        },
       ),
     );
   }
@@ -30,16 +36,15 @@ class _Navigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final navigationModel = Provider.of<_NavigationModel>(context);
 
     return BottomNavigationBar(
       currentIndex: navigationModel.currentPage,
-      onTap: ( value ) => navigationModel.currentPage = value,
+      onTap: (value) => navigationModel.currentPage = value,
       items: const [
         BottomNavigationBarItem(
             icon: Icon(Icons.person_2_outlined), label: 'Para ti'),
-        BottomNavigationBarItem(icon: Icon(Icons.public), label: 'Encabezados'),
+        BottomNavigationBarItem(icon: Icon(Icons.public), label: 'Categorías'),
       ],
     );
   }
@@ -51,7 +56,6 @@ class _Pages extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final navigationModel = Provider.of<_NavigationModel>(context);
-
 
     return PageView(
       //physics: const BouncingScrollPhysics(),
@@ -68,6 +72,7 @@ class _Pages extends StatelessWidget {
 
 class _NavigationModel with ChangeNotifier {
   int _currentPage = 0;
+  final List<String> _titles = ['Para ti', 'Categorías'];
 
   int get currentPage => _currentPage;
 
@@ -75,8 +80,13 @@ class _NavigationModel with ChangeNotifier {
 
   set currentPage(int value) {
     _currentPage = value;
-        _pageController.animateToPage(value, duration: const Duration(milliseconds: 50), curve: Curves.linear);
+    _pageController.animateToPage(value,
+        duration: const Duration(milliseconds: 50), curve: Curves.linear);
     notifyListeners();
+  }
+
+  String getCurrentPageTitle() {
+    return _titles[_currentPage];
   }
 
   PageController get pageController => _pageController;
